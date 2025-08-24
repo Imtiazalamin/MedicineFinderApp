@@ -6,13 +6,14 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import Pharmacy_viewset, stock_viewset, medicine_viewset
+from .views import Pharmacy_viewset, stock_viewset, medicine_viewset, WhishlistViewset
 
 
 router = DefaultRouter()
 router.register("pharmacies", Pharmacy_viewset, basename="pharmacy")
 router.register("stocks", stock_viewset, basename="stock")
 router.register("medicines", medicine_viewset, basename="medicine")
+router.register("whishlist", WhishlistViewset, basename='whishlist' )
 
 
 urlpatterns = [

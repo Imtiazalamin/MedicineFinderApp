@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUserRegister, Pharmacy, Medicine, stock
+from .models import CustomUserRegister, Pharmacy, Medicine, stock, Whishlist
 from django.contrib.auth import authenticate
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -38,27 +38,31 @@ class UserLoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("You must register first or check credentials") 
 
 
-class Pharmacyserializer(serializers.Serializer):
+class Pharmacyserializer(serializers.ModelSerializer):
     class Meta:
         model = Pharmacy  
-        fields = ['id', 'name', 'address', 'city', 'lat', 'lng']
+        fields = ['id', 'name', 'address', 'city', 'lat', 'lng', 'image']
         read_only_fields = ['owner'] 
 
 
-class Medicineserializer(serializers.Serializer):
+class Medicineserializer(serializers.ModelSerializer):
     class Meta:
         model = Medicine
-        fields = ['medicine_name', 'description', 'cetagory', 'company_name', 'image']
+        fields = ['medicine_name', 'description', 'cetagory', 'company_name', 'price' 'image']
         read_only_fields = ['owner'] # owner শুধু দেখা যাবে, client সেট করতে পারবে না
 
-class stockserializer(serializers.Serializer):
+class stockserializer(serializers.ModelSerializer):
     class Meta:
         model = stock
-        fields = ['pharmacy', 'medicine_name', 'quantity', 'price'] 
+        fields = ['__all__'] 
         read_only_fields = ['owner']       
 
 
-        
+class WishListserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Whishlist
+        fields= ['id', 'user', 'medicine', 'create_at'] 
+        read_only_fields = ['user', 'created_at']      
 
 
 

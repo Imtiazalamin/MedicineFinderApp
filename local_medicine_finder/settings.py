@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'LocalMedicineFinderapp',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,10 @@ REST_FRAMEWORK = {
     ),
     
 }
+
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+
+}   

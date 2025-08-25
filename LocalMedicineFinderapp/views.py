@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from .models import CustomUserRegister, Pharmacy, Medicine, stock, Whishlist
-from rest_framework import viewsets, status, permissions, filters # modelviewset use korar jonno
+from rest_framework import viewsets, status, permissions, filters, generics # modelviewset use korar jonno
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response # api theke response return korar jonno
-from .serializers import UserRegistrationSerializer, Pharmacyserializer, Medicineserializer, stockserializer, WishListserializer #  .seriliazers theke UserRegistrationSerializer theke data anlam
+from .serializers import UserRegistrationSerializer, Pharmacyserializer, Medicineserializer, stockserializer, WishListserializer, UserProfileSerializer #  .seriliazers theke UserRegistrationSerializer theke data anlam
 from rest_framework.permissions import  AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import StockFilter
-
+from rest_framework.decorators import action
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 
@@ -92,6 +94,40 @@ class stock_viewset(viewsets.ModelViewSet):
             raise PermissionDenied("You can only delete your own data")
         instance.delete()
 
+    @action(detail=False, methods=['get'], url_path='low-stock')
+    def low_stock(self, request):
+        threshold = int(request.query_params.get('threshold', 5))
+        user = request.user
+
+        # Low stock filter
+        items = stock.objects.filter(quantity__lt=threshold)
+        if user.user_type == 'seller':
+            items = items.filter(pharmacy__owner=user)
+
+        # Email পাঠানো
+        email_status = {"sent": False, "message": "No email sent"}
+        if items.exists() and getattr(user, 'email', None) and user.user_type == 'seller':
+            subject = "Low Stock Alert"
+            message = "নিচের Medicine গুলোর stock কম:\n\n" + "\n".join(
+                [f"{i.medicine.medicine_name} - Qty: {i.quantity}" for i in items]
+            )
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],   # seller এর email এ যাবে
+                    fail_silently=False,
+                )
+                email_status = {"sent": True, "message": f"Email sent to {user.email}"}
+            except Exception as e:
+                email_status = {"sent": False, "message": f"Email failed: {str(e)}"}
+
+        serializer = self.get_serializer(items, many=True)
+        return Response({
+            "low_stock_items": serializer.data,
+            "email_status": email_status
+        })
 
 # Medicine Viewset (fixed)
 class medicine_viewset(viewsets.ModelViewSet):
@@ -150,7 +186,15 @@ class WhishlistViewset(viewsets.ModelViewSet):
 
 
 
+class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        # শুধু লগ ইন করা user এর প্রোফাইল দেখাবে
+        return self.request.user
+
+ 
 
 
       

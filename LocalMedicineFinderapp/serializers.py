@@ -48,13 +48,13 @@ class Pharmacyserializer(serializers.ModelSerializer):
 class Medicineserializer(serializers.ModelSerializer):
     class Meta:
         model = Medicine
-        fields = ['medicine_name', 'description', 'cetagory', 'company_name', 'price' 'image']
+        fields = ['id', 'medicine_name', 'description', 'cetagory', 'company_name', 'price' 'image']
         read_only_fields = ['owner'] # owner শুধু দেখা যাবে, client সেট করতে পারবে না
 
 class stockserializer(serializers.ModelSerializer):
     class Meta:
         model = stock
-        fields = ['__all__'] 
+        fields = ['id', 'pharmacy', 'medicine_name', 'quantity', 'price'] 
         read_only_fields = ['owner']       
 
 
@@ -66,7 +66,11 @@ class WishListserializer(serializers.ModelSerializer):
 
 
 
-
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUserRegister
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'address']
+        read_only_fields = ['id', 'username', 'email']  # শুধু update হবে কিছু ফিল্ড
 
 
        

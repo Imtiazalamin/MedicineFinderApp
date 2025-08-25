@@ -10,6 +10,7 @@ class CustomUserRegister(AbstractUser):
     phone_number = models.CharField(max_length=11, blank=True, null=True)
     address = models.TextField(blank=False, null=False)
     user_type = models.CharField(max_length=10, choices=user_type, default='buyer')
+    
 
 class Pharmacy(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -46,7 +47,6 @@ class Whishlist(models.Model):
         unique_together = ('user', 'medicine', 'create_at')   
 
     
-        
 
       
      

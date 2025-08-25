@@ -88,7 +88,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'LocalMedicineFinderapp.CustomUserRegister'
+AUTH_USER_MODEL = 'LocalMedicineFinderapp.CustomUserRegister' # authentication er jonno joruri
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -154,3 +154,12 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 
 }   
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "your_email@gmail.com"      # তোমার Gmail
+EMAIL_HOST_PASSWORD = "your_app_password"     # Gmail App Password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
